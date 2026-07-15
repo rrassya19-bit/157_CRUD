@@ -74,3 +74,24 @@ app.get('/biodata/:id', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
+
+// ===== ENDPOINT: POST tambah biodata =====
+// Method: POST
+// URL: /biodata
+// Fungsi: Menambahkan data baru ke tabel biodata
+app.post('/biodata', (req, res) => {
+    const { nama, nim, jurusan, alamat, no_hp } = req.body; // ambil data dari body request (dikirim via JSON/form)
+
+    // query INSERT dengan RETURNING * agar data yang baru dimasukkan langsung dikembalikan
+    pool.query(
+        'INSERT INTO biodata (nama, nim, jurusan, alamat, no_hp) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [nama, nim, jurusan, alamat, no_hp]       // nilai placeholder $1-$5
+    )
+        .then((result) => {
+            res.status(201).json(result.rows[0]); // status 201 = Created
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
