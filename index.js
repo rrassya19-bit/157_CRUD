@@ -80,12 +80,12 @@ app.get('/biodata/:id', (req, res) => {
 // URL: /biodata
 // Fungsi: Menambahkan data baru ke tabel biodata
 app.post('/biodata', (req, res) => {
-    const { nama, nim, jurusan, alamat, no_hp } = req.body; // ambil data dari body request (dikirim via JSON/form)
+    const { nama, nim, kelas } = req.body; // ambil data dari body request (dikirim via JSON/form)
 
     // query INSERT dengan RETURNING * agar data yang baru dimasukkan langsung dikembalikan
     pool.query(
-        'INSERT INTO biodata (nama, nim, jurusan, alamat, no_hp) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [nama, nim, jurusan, alamat, no_hp]       // nilai placeholder $1-$5
+        'INSERT INTO biodata (nama, nim, kelas) VALUES ($1, $2, $3) RETURNING *',
+        [nama, nim, kelas]                 // nilai placeholder $1-$3
     )
         .then((result) => {
             res.status(201).json(result.rows[0]); // status 201 = Created
@@ -101,13 +101,13 @@ app.post('/biodata', (req, res) => {
 // URL: /biodata/:id
 // Fungsi: Mengupdate data biodata berdasarkan id
 app.put('/biodata/:id', (req, res) => {
-    const { id } = req.params;                              // ambil id dari URL
-    const { nama, nim, jurusan, alamat, no_hp } = req.body; // ambil data baru dari body
+    const { id } = req.params;                   // ambil id dari URL
+    const { nama, nim, kelas } = req.body;       // ambil data baru dari body
 
-    // query UPDATE dengan WHERE id = $6 untuk update data spesifik
+    // query UPDATE dengan WHERE id = $4 untuk update data spesifik
     pool.query(
-        'UPDATE biodata SET nama = $1, nim = $2, jurusan = $3, alamat = $4, no_hp = $5 WHERE id = $6 RETURNING *',
-        [nama, nim, jurusan, alamat, no_hp, id] // $1-$5 data baru, $6 = id
+        'UPDATE biodata SET nama = $1, nim = $2, kelas = $3 WHERE id = $4 RETURNING *',
+        [nama, nim, kelas, id] // $1-$3 data baru, $4 = id
     )
         .then((result) => {
             if (result.rows.length === 0) {    // jika id tidak ditemukan
