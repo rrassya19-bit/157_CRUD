@@ -95,3 +95,28 @@ app.post('/biodata', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
+
+// ===== ENDPOINT: PUT update biodata =====
+// Method: PUT
+// URL: /biodata/:id
+// Fungsi: Mengupdate data biodata berdasarkan id
+app.put('/biodata/:id', (req, res) => {
+    const { id } = req.params;                              // ambil id dari URL
+    const { nama, nim, jurusan, alamat, no_hp } = req.body; // ambil data baru dari body
+
+    // query UPDATE dengan WHERE id = $6 untuk update data spesifik
+    pool.query(
+        'UPDATE biodata SET nama = $1, nim = $2, jurusan = $3, alamat = $4, no_hp = $5 WHERE id = $6 RETURNING *',
+        [nama, nim, jurusan, alamat, no_hp, id] // $1-$5 data baru, $6 = id
+    )
+        .then((result) => {
+            if (result.rows.length === 0) {    // jika id tidak ditemukan
+                return res.status(404).send('Data tidak ditemukan');
+            }
+            res.json(result.rows[0]);          // kirim data yang sudah diupdate
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
