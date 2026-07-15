@@ -141,3 +141,8 @@ app.delete('/biodata/:id', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
+
+// Menjalankan server pada port yang ditentukan
+app.listen(port, () => {
+    console.log(`App is running on port ${port}.`);
+});
