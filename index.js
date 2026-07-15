@@ -120,3 +120,24 @@ app.put('/biodata/:id', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
+
+// ===== ENDPOINT: DELETE biodata =====
+// Method: DELETE
+// URL: /biodata/:id
+// Fungsi: Menghapus data biodata berdasarkan id
+app.delete('/biodata/:id', (req, res) => {
+    const { id } = req.params; // ambil id dari URL
+    
+    // query DELETE dengan RETURNING * agar data yang dihapus dikembalikan
+    pool.query('DELETE FROM biodata WHERE id = $1 RETURNING *', [id])
+        .then((result) => {
+            if (result.rows.length === 0) { // jika id tidak ditemukan
+                return res.status(404).send('Data tidak ditemukan');
+            }
+            res.json({ message: 'Data berhasil dihapus', data: result.rows[0] });
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
