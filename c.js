@@ -74,3 +74,75 @@ app.get('/biodata/:id', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
+
+// ===== ENDPOINT: POST tambah biodata =====
+// Method: POST
+// URL: /biodata
+// Fungsi: Menambahkan data baru ke tabel biodata
+app.post('/biodata', (req, res) => {
+    const { nama, nim, jurusan, alamat, no_hp } = req.body; // ambil data dari body request (dikirim via JSON/form)
+
+    // query INSERT dengan RETURNING * agar data yang baru dimasukkan langsung dikembalikan
+    pool.query(
+        'INSERT INTO biodata (nama, nim, jurusan, alamat, no_hp) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [nama, nim, jurusan, alamat, no_hp]       // nilai placeholder $1-$5
+    )
+        .then((result) => {
+            res.status(201).json(result.rows[0]); // status 201 = Created
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+// ===== ENDPOINT: PUT update biodata =====
+// Method: PUT
+// URL: /biodata/:id
+// Fungsi: Mengupdate data biodata berdasarkan id
+app.put('/biodata/:id', (req, res) => {
+    const { id } = req.params;                              // ambil id dari URL
+    const { nama, nim, jurusan, alamat, no_hp } = req.body; // ambil data baru dari body
+
+    // query UPDATE dengan WHERE id = $6 untuk update data spesifik
+    pool.query(
+        'UPDATE biodata SET nama = $1, nim = $2, jurusan = $3, alamat = $4, no_hp = $5 WHERE id = $6 RETURNING *',
+        [nama, nim, jurusan, alamat, no_hp, id] // $1-$5 data baru, $6 = id
+    )
+        .then((result) => {
+            if (result.rows.length === 0) {    // jika id tidak ditemukan
+                return res.status(404).send('Data tidak ditemukan');
+            }
+            res.json(result.rows[0]);          // kirim data yang sudah diupdate
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+// ===== ENDPOINT: DELETE biodata =====
+// Method: DELETE
+// URL: /biodata/:id
+// Fungsi: Menghapus data biodata berdasarkan id
+app.delete('/biodata/:id', (req, res) => {
+    const { id } = req.params; // ambil id dari URL
+    
+    // query DELETE dengan RETURNING * agar data yang dihapus dikembalikan
+    pool.query('DELETE FROM biodata WHERE id = $1 RETURNING *', [id])
+        .then((result) => {
+            if (result.rows.length === 0) { // jika id tidak ditemukan
+                return res.status(404).send('Data tidak ditemukan');
+            }
+            res.json({ message: 'Data berhasil dihapus', data: result.rows[0] });
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
+
+// Menjalankan server pada port yang ditentukan
+app.listen(port, () => {
+    console.log(`App is running on port ${port}.`);
+});
