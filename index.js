@@ -15,3 +15,12 @@ app.use(
         extended: true         // mengizinkan tipe data kompleks (array/objek)
     })
 )
+
+// Membuat koneksi pool ke database PostgreSQL
+const pool = new pg.Pool({
+    user: 'postgres',         // username database
+    host: 'localhost',        // host database (localhost = komputer sendiri)
+    database: 'mahasiswa',    // nama database yang digunakan
+    password: 'rassya100407', // password database
+    port: 5432,               // port default PostgreSQL
+});
