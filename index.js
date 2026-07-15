@@ -24,3 +24,19 @@ const pool = new pg.Pool({
     password: 'rassya100407', // password database
     port: 5432,               // port default PostgreSQL
 });
+
+// ===== ENDPOINT: Route utama (/) =====
+// Method: GET
+// Fungsi: Menampilkan semua data dari tabel biodata (untuk test)
+app.get('/', (req, res) => {
+    console.log('TEST DATA');
+    pool.query('SELECT * FROM biodata') // query SQL ambil semua data
+        .then((testdata) => {
+            console.log(testdata.rows); // cetak data ke console
+            res.json(testdata.rows);    // kirim data sebagai JSON
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error'); 
+        });
+});
