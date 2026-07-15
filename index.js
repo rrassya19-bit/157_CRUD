@@ -40,3 +40,18 @@ app.get('/', (req, res) => {
             res.status(500).send('Internal Server Error'); 
         });
 });
+
+// ===== ENDPOINT: GET semua biodata =====
+// Method: GET
+// URL: /biodata
+// Fungsi: Mengambil seluruh data biodata
+app.get('/biodata', (req, res) => {
+    pool.query('SELECT * FROM biodata') // query SELECT semua data
+        .then((result) => {
+            res.json(result.rows);     // kirim hasil sebagai JSON (array)
+        })
+        .catch((err) => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Internal Server Error');
+        });
+});
