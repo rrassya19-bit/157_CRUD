@@ -1,38 +1,17 @@
-import express from 'express';
-import pg from 'pg';
+import express from 'express';   // Import library express untuk membuat server API
+import pg from 'pg';             // Import library pg untuk koneksi ke database PostgreSQL
 
-const app = express();
-const port = 3000;
-const { Pool } = pg;
 
-app.use (express.json());
+const app = express();          // Membuat instance aplikasi express
+const port = 3000;              // Menentukan port server akan berjalan
+const { Pool } = pg;            // Mengambil class Pool dari pg (Pool = kumpulan koneksi database)
+
+
+app.use (express.json());       // Middleware untuk membaca data JSON dari body request
+
+// Middleware untuk membaca data form-urlencoded dari body request
 app.use(
     express.urlencoded({ 
-        extended: true 
+        extended: true         // mengizinkan tipe data kompleks (array/objek)
     })
 )
-
-const pool = new pg.Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'mahasiswa',
-    password: 'rassya100407',
-    port: 5432,
-});
-
-app.get('/', (req, res) => {
-    console.log('TEST DATA');
-    pool.query('SELECT * FROM biodata')
-        .then((testdata) => {
-            console.log(testdata.rows);
-            res.json(testdata.rows);
-        })
-        .catch((err) => {
-            console.error('Error executing query', err.stack);
-            res.status(500).send('Internal Server Error');
-        });
-});
-
-app.listen(port, () => {
-    console.log(`App is running on port ${port}.`);
-});
